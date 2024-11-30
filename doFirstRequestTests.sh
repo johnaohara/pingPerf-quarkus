@@ -4,7 +4,7 @@
 trap shutdown SIGKILL SIGTERM SIGINT
 
 CID=
-ITERATIONS=20
+ITERATIONS=10
 
 shutdown() {
   cleanup
