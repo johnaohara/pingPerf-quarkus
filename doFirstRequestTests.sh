@@ -41,14 +41,17 @@ echo "CPUS=${CPUS}"
 
 for i in $(seq 1 $ITERATIONS)
 do
+  sleep 2
+  
   echo "" > output2
 
   ./loop.sh pingperf &
   LOOP_PID=$!
 
   CID=$(podman run --privileged -d --net=host --memory=1g --cpuset-cpus ${CPUS} ${IMAGE})
+  sleep 5
   # Wait for container application to start listening on port 9090, timeout wait after 5s
-  timeout 5s /bin/bash -c "until /usr/sbin/ss -tnl sport = :9090 | grep -q LISTEN; do sleep 0.1 || exit; done"
+  # timeout 5s /bin/bash -c "until /usr/sbin/ss -tnl sport = :9090 | grep -q LISTEN; do sleep 0.1 || exit; done"
   podman logs ${CID}
 
   # Grab First Response
@@ -65,6 +68,7 @@ do
   let sutime=${stopMillis}-${startMillis}
   echo "First Response Time in ms: $sutime"
 
+  sleep 5
   PID=$(ps -ef | grep java | grep -v grep | awk '{print $2}' | tail -1)
   FP=$(ps -o rss= ${PID} | numfmt --from-unit=1024 --to=iec | awk '{gsub("M"," "); print $1}')
   FP2=$(cat /proc/${PID}/smaps | grep 'Rss' | awk '{total+=$2;} END{print total;}' | numfmt --from-unit=1024 --to=iec | awk '{gsub("M"," "); print $1}')
