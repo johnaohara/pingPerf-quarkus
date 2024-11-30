@@ -41,6 +41,7 @@ echo "CPUS=${CPUS}"
 
 for i in $(seq 1 $ITERATIONS)
 do
+  echo "" > output2
 
   ./loop.sh pingperf &
   LOOP_PID=$!
